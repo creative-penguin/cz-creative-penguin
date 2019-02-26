@@ -5,12 +5,6 @@ const wrap = require('word-wrap'),
       longest = require('longest'),
       rightPad = require('right-pad');
 
-const filter = function(array) {
-   return array.filter(function(x) {
-      return x;
-   });
-};
-
 // This can be any kind of SystemJS compatible module.
 // We use Commonjs here, but ES6 or AMD would do just
 // fine.
@@ -70,6 +64,12 @@ module.exports = function(options) {
             },
             {
                type: 'input',
+               name: 'issue',
+               message: 'Add issue reference (e.g. "#123"): (press enter to skip)\n',
+               default: options.defaultIssues ? options.defaultIssues : undefined,
+            },
+            {
+               type: 'input',
                name: 'body',
                message: 'Provide a longer description of the change: (press enter to skip)\n',
                default: options.defaultBody,
@@ -88,32 +88,17 @@ module.exports = function(options) {
                   return answers.isBreaking;
                },
             },
-            {
-               type: 'confirm',
-               name: 'isIssueAffected',
-               message: 'Does this change affect any open issues?',
-               default: !!options.defaultIssues,
-            },
-            {
-               type: 'input',
-               name: 'issues',
-               message: 'Add issue references (e.g. "fix #123", "re #123".):\n',
-               when: function(answers) {
-                  return answers.isIssueAffected;
-               },
-               default: options.defaultIssues ? options.defaultIssues : undefined,
-            },
          ];
 
          cz.prompt(PROMPTS)
             .then(function(answers) {
-               let breaking = answers.breaking ? answers.breaking.trim() : '',
-                   issues, footer;
+               let breaking = answers.breaking ? answers.breaking.trim() : '';
 
                const maxLineWidth = 100,
-                     scope = answers.scope.trim() ? '(' + answers.scope.trim() + ')' : '';
+                     scope = answers.scope.trim() ? '(' + answers.scope.trim() + ')' : '',
+                     issue = answers.issue ? ` (${answers.issue})` : '',
                      // Hard limit this line
-                     head = (answers.type + scope + ': ' + answers.subject.trim()).slice(0, maxLineWidth);
+                     head = (answers.type + scope + ': ' + answers.subject.trim()).slice(0, maxLineWidth) + issue;
 
                const wrapOptions = {
                   trim: true,
@@ -125,13 +110,10 @@ module.exports = function(options) {
                // Wrap these lines at 100 characters
                const body = wrap(answers.body, wrapOptions);
 
-               breaking = breaking ? 'BREAKING CHANGE: ' + breaking.replace(/^BREAKING CHANGE: /, '') : '';
+               breaking = breaking ? `\n\nBREAKING CHANGE: ${breaking.replace(/^BREAKING CHANGE: /, '')}` : '';
                breaking = wrap(breaking, wrapOptions);
 
-               issues = answers.issues ? wrap(answers.issues, wrapOptions) : '';
-               footer = filter([ breaking, issues ]).join('\n\n');
-
-               commit(head + '\n\n' + body + '\n\n' + footer);
+               commit(head + '\n\n' + body + breaking);
             });
       },
    };
