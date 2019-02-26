@@ -1,5 +1,5 @@
 {
-  "name": "cz-creative-penguin",
+  "name": "@creativepenguin/cz",
   "version": "0.1.0",
   "description": "Commitizen adapter following the Creative Penguin standard.",
   "main": "index.js",
