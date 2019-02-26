@@ -17,6 +17,7 @@
   "author": "Jim Jenkins <jimjenkins5@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@commitlint/config-conventional": "7.5.0",
     "conventional-commit-types": "2.0.0",
     "lodash.map": "4.5.1",
     "longest": "1.0.1",
@@ -25,7 +26,6 @@
   },
   "devDependencies": {
     "@commitlint/cli": "7.5.2",
-    "@commitlint/config-conventional": "7.5.0",
     "@silvermine/eslint-config": "2.0.0",
     "commitizen": "2.9.6",
     "eslint": "5.14.1",
